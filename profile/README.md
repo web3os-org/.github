@@ -1,4 +1,4 @@
-# ![Web3OS.sh](.github/logo.png) <!-- omit in toc -->
+# ![Web3OS.sh](https://github.com/web3os-org/.github/raw/main/logo.png) <!-- omit in toc -->
 
 A developer-friendly ecosystem of apps designed to build a crypto-focused web-based operating system. The goal is for the entire system to run within any modern browser, while having the capability to connect to backend systems for more features.
 
