@@ -470,6 +470,6 @@ Better yet, if you can make it do the thing, please [submit a PR](CONTRIBUTING.m
 
 You can find the full API reference and other tutorials at [https://docs.web3os.sh](https://docs.web3os.sh)
 
-Questions? Check out the [discussion forums](https://github.com/web3os-org/kernel/discussions)
+Questions? Check out the [discussion forums](https://github.com/orgs/web3os-org/discussions)
 
 Problems? Search the [issues](https://github.com/web3os-org/kernel/issues)
