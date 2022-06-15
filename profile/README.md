@@ -64,6 +64,7 @@ The project is still very young, and more documentation and organization is Comi
 - [App Structure](#app-structure)
 - [Backend (web3os-server)](#backend-web3os-server)
 - [WebUSB](#webusb)
+- [Web Bluetooth](#web-bluetooth)
 - [TODO](#todo)
 - [Can it do *thing*?](#can-it-do-thing)
 - [Further Documentation](#further-documentation)
@@ -79,7 +80,7 @@ The project is still very young, and more documentation and organization is Comi
 - Optional desktop environment
 - Optional backend environment runs in Docker container
 - Web-based terminal with [xterm.js](https://github.com/xtermjs/xterm.js)
-- [Web3OS Package Manager](#web3os-package-manager)
+- [3pm: The Web3OS Package Manager](#web3os-package-manager)
 - Modules may also be imported with [SystemJS](https://github.com/systemjs/systemjs)
 - Web3 wallet integration with [web3.js](https://github.com/ChainSafe/web3.js)
 - Fully in-browser filesystem with [BrowserFS](https://github.com/jvilk/BrowserFS)
@@ -101,11 +102,14 @@ The project is still very young, and more documentation and organization is Comi
   - [WIP] [Emscripten](https://emscripten.org/)
   - [WIP] [AssemblyScript](https://www.assemblyscript.org/)
 - Decentralized:
-  - Open source to run your own copy
+  - Open source to run and customize your own copy
+  - Included Fleek and Netlify configs for easy deployment
   - Main site hosted on [Fleek](https://fleek.co)
   - Backup site hosted on IPFS
 - Developer-friendly:
-  - Easily scriptable
+  - Easily scriptable and customizable
+  - Use an [initfsUrl](https://docs.web3os.sh/global.html#setupFilesystem) query param to load a ZIP file from a URL to populate your filesystem
+  - Use a [mountableFileSystemConfig](https://docs.web3os.sh/global.html#setupFilesystem) query param to specify how your filesystems should be mounted
   - Install nearly any browser package from npm
   - Programs are just HTML/CSS/JS/WebGL, or any language that compiles to WebAssembly
 
@@ -135,7 +139,7 @@ Please consider digging into the code and see what you can come up with and subm
 
 Not sure where to start? Check out [the issues](https://github.com/web3os-org/kernel/issues)!
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/web3os-org/kernel/blob/master/CONTRIBUTING.md)
 
 </details>
 
@@ -181,7 +185,7 @@ yarn # or npm install
 yarn start # or npm start
 ```
 
-From here, simply connect to [https://localhost:8080](https://localhost:8080) and accept the certificate warning.
+From here, simply connect to [https://localhost:2160](https://localhost:2160) and accept the certificate warning.
 
 Alternatively, install [src/assets/ssl/localhost.crt](https://github.com/web3os-org/kernel/blob/master/src/assets/ssl/localhost.crt) to your trusted certificate store.
 
@@ -245,13 +249,13 @@ See some sample scripts at: [https://github.com/web3os-org/sample-scripts](https
 
 ---
 
-The `wpm` command can be used to manage installed packages. Installing a package adds an entry to `/config/packages` and all packages in this file are loaded on startup.
+The `3pm` command can be used to manage installed packages. Installing a package adds an entry to `/config/packages` and all packages in this file are loaded on startup.
 
 Packages are generally ES Modules, located at a url that contains a `package.json`.
 
-You can attempt to install any package from npm using a CDN such as [unpkg](https://unpkg.com) (this is the default wpm registry).
+You can attempt to install any package from npm using a CDN such as [unpkg](https://unpkg.com) (this is the default 3pm registry).
 
-This means that during development, you can serve up your app locally, with Live Server for example, and `wpm install http://localhost:5500`.
+This means that during development, you can serve up your app locally, with Live Server for example, and `3pm install http://localhost:5500`.
 
 You may also just use the `import` command to directly import an ES module from a URL. Or bypass all of this and use your own technique!
 
@@ -260,19 +264,19 @@ Dependency management is another monster altogether, so that's still a WIP. This
 Here are a few examples of npm libraries that can be successfully loaded in web3os:
 
 - [lodash](https://www.npmjs.com/package/lodash)
-  - `wpm install lodash`
+  - `3pm install lodash`
   - This doesn't add an executable, but `_` is now available in the global scope.
 
 - [jquery](https://www.npmjs.com/package/jquery)
-  - `wpm install jquery`
+  - `3pm install jquery`
   - This doesn't add an executable, but `$` is now available in the global scope.
 
 - [moment](https://momentjs.com)
-  - `wpm install --umd moment`
+  - `3pm install --umd moment`
   - `const now = Kernel.modules.moment.run()`
 
 - [umbrellajs](https://umbrellajs.com/)
-  - `wpm install umbrellajs --main umbrella.esm.js`
+  - `3pm install umbrellajs --main umbrella.esm.js`
   - Now you can use it:
     - `const u = Kernel.modules.umbrellajs.default`
     - `const body = u('body')`
@@ -286,7 +290,6 @@ Here are a few examples of npm libraries that can be successfully loaded in web3
 
 ---
 
-- [@web3os-apps/chess](https://npmjs.org/@web3os-apps/chess)
 - [@web3os-apps/code](https://npmjs.org/@web3os-apps/code)
 - [@web3os-apps/doom](https://npmjs.org/@web3os-apps/doom)
 - [@web3os-apps/gun](https://npmjs.org/@web3os-apps/gun)
@@ -298,6 +301,8 @@ Here are a few examples of npm libraries that can be successfully loaded in web3
 </details>
 
 See the [full list](https://www.npmjs.com/org/web3os-apps)
+
+Note: some apps are currently either very basic implementations or just placeholders to be developed further
 
 ## Kernel Interface
 
@@ -321,13 +326,18 @@ This (and everything else) is subject to change before version 1.0.
 - Convenience method to create a sweetalert2 dialog with appropriate defaults
 - e.g., `window.Kernel.dialog({ title: 'Are you sure?', text: 'Scary stuff!', icon: 'warning' })`
 
+`window.Kernel.fs` = { ...BrowserFS }
+
+- This object holds the initialized BrowserFS instance
+- e.g., `const doesExist = window.Kernel.fs.existsSync('/config/packages')`
+
 `window.Kernel.set` ('namespace', 'key', :any)
 
 - Sets a value in the kernel "memory" - persists in localStorage
 - e.g., `window.Kernel.set('user', 'name', 'hosk')`
 - e.g., `window.Kernel.set('myapp', 'theme', { color: 'rebeccapurple' })`
 
-`window.Kernel.get` ('namespace', 'key') = value
+`window.Kernel.get` ('namespace', 'key') = :any
 
 - Gets a value from the kernel "memory" - loaded from localStorage
 - e.g., `window.Kernel.get('user')`
@@ -347,7 +357,11 @@ This (and everything else) is subject to change before version 1.0.
 
 ---
 
-Developers should be able to create apps in any way they like, with as few requirements as possible. Remember, your app is simply running in a browser - you have access to everything that any other script does.
+Developers should be able to create apps in any way they like, with as few requirements as possible. Remember, your app is simply running in a browser - you have access to everything that any other script or module does.
+
+To make your module executable from the command line, you may export an async function named `run`, or your default export must be a function.
+
+Your module or `package.json` may also contain a `help` property that contians your module's help text.
 
 The best way to create applications for web3os is to create an `npm` package, using any bundler you'd like.
 
@@ -377,8 +391,6 @@ For example, to create an application with [snowpack](https://www.snowpack.dev):
 `index.js`:
 
 ```js
-import pkg from './package.json'
-
 export const help = `
   This app enables developers to Do An App!
 
@@ -386,6 +398,7 @@ export const help = `
 `
 
 export async function run (terminal, context) {
+// or: export default function (terminal, context) {
   console.log(terminal) // the xterm.js terminal in which your app is running
   console.log(context) // the plain string of arguments passed to your app
   terminal.log('Thanks for checking out myapp!')
@@ -409,7 +422,7 @@ Apps can be written and bundled a number of different ways, for some ideas check
 
 The `backend` command is the utility to connect to and interact with backend servers. The web3os-server spins up a private Docker container for performing various server-side tasks at the request of the web3os client, authenticated with a user's wallet.
 
-It offers multi-user capability while restricting access based on user's authenticated wallet address.
+It offers multi-user capability while restricting access based on user's authenticated wallet address, or other attributes such as NFT ownership, etc.
 
 [View the web3os-server repository](https://github.com/web3os-org/server)
 
@@ -420,7 +433,7 @@ It offers multi-user capability while restricting access based on user's authent
 <details>
 <summary><strong>Expand WebUSB</strong></summary>
 
-Experimental WebUSB features are only available in Chrome-based browsers at this time.
+Experimental WebUSB API features are limited in browser support at this time.
 
 The `usb` command doesn't do much except pair and maintain a list of devices.
 
@@ -441,21 +454,48 @@ Access the array of devices within an app: `Kernel.modules.usb.devices`
 
 </details>
 
+## Web Bluetooth
+
+<details>
+<summary><strong>Expand Web Bluetooth</strong></summary>
+
+Experimental Web Bluetooth API features are limited in browser support at this time.
+
+The `bluetooth` command doesn't do much except pair and maintain a list of devices.
+
+```text
+Usage:
+    bluetooth devices            List paired bluetooth devices
+    bluetooth pair <options>     Request bluetooth device (blank for user choice)
+
+  Options:
+    --help                 Print this help message
+    --name                 Specify a friendly name for the bluetooth device
+    --version              Print the version information
+```
+
+Access the array of devices within an app: `Kernel.modules.bluetooth.devices`
+
+</details>
+
 ## TODO
 
 <details>
 <summary><strong>Expand TODO</strong></summary>
 
 - There's a lot to do... please help. 😅
-- Decoupling of built-in apps into their own packages
-- Unified WASM handling
+- Typescriptify everything
+- Finish internationalization/translations
+- Decoupling of built-in modules into their own packages
+- Unified WASM handling (or just give up and focus on Emscripten)
 - Finish development of backend Node.js web3os-server API
-- Rewrite expensive core modules in Rust
+- Rewrite expensive core modules using Emscripten
 - Improve security/isolation
-- Some apps are just placeholders
+- Some apps are just placeholders; flesh them out
 - Modify command interfaces to conform to IEEE Std 1003.1-2017
 - Flesh out rm command and remove rmdir; allow recursive delete
 - Migrate all global CSS to CSS modules
+- Improve offline mode handling
 - Add more things to the TODO list
 
 </details>
@@ -464,7 +504,7 @@ Access the array of devices within an app: `Kernel.modules.usb.devices`
 
 If it's not in this README or not readily apparent in the included apps, the answer is probably not **yet**. PR's are always welcome and encouraged. Let's talk about it on [Discord](https://discord.gg/yA4M83fXn9)!
 
-Better yet, if you can make it do the thing, please [submit a PR](CONTRIBUTING.md)! This project will never grow without a thriving community of developers!
+Better yet, if you can make it do the thing, please [submit a PR](https://github.com/web3os-org/kernel/blob/master/CONTRIBUTING.md)! This project will never grow without a thriving community of developers!
 
 ## Further Documentation
 
