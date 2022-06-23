@@ -6,7 +6,7 @@
 -Hal Finney
 
 [![Launch web3os.sh](https://img.shields.io/badge/launch-web3os.sh-blue?style=for-the-badge)](https://web3os.sh)
-[![Launch web3os.sh on IPFS](https://img.shields.io/badge/launch-web3os%20on%20ipfs-silver?style=for-the-badge)](https://ipfs.io/ipfs/QmRQrbvvH22sCioL7RbhPNVrXg65mQ2BEGs8pxKJoWVHe3/)
+[![Launch web3os.sh on IPFS](https://img.shields.io/badge/launch-web3os%20on%20ipfs-silver?style=for-the-badge)](https://web3os-sh.ipns.dweb.link)
 [![Launch web3os.sh on Fleek](https://img.shields.io/badge/launch-web3os%20on%20Fleek-silver?style=for-the-badge)](https://web3os.on.fleek.co)
 
 ---
@@ -20,7 +20,7 @@
 
 [![Sponsors](https://img.shields.io/github/sponsors/web3os-org?color=red)](https://github.com/web3os-org/kernel/blob/master/LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/web3os-org/kernel?color=yellow)](https://github.com/web3os-org/kernel/graphs/contributors)
-[![GitHub license](https://img.shields.io/github/license/web3os-org/kernel.svg?color=blue)](https://github.com/web3os-org/kernel/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/web3os-org/kernel/blob/master/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue.svg)](https://github.com/web3os-org/kernel/compare)
 [![Discord](https://img.shields.io/discord/926916877689700373?label=discord)](https://discord.gg/yA4M83fXn9)
 [![Observatory Grade](https://img.shields.io/mozilla-observatory/grade/web3os.sh?publish)](https://observatory.mozilla.org/analyze/web3os.sh)
@@ -40,7 +40,7 @@ A decentralized web-based operating system for the next web, empowering users an
 - Easily install virtually any npm browser package
 - Customize the OS to suit your individual needs
 - Write scripts to perform particular tasks
-- Write full applications that can create windows
+- Write full applications that can create windows and interface with the kernel
 - Interact with crypto wallets and smart contracts
 - Utilize a number of P2P protocols within the browser
 
@@ -181,8 +181,8 @@ See [CONTRIBUTING.md](https://github.com/web3os-org/kernel/blob/master/CONTRIBUT
 ```sh
 git clone git@github.com:web3os-org/kernel.git
 cd kernel
-yarn # or npm install
-yarn start # or npm start
+pnpm install # or npm install
+pnpm start # or npm start
 ```
 
 From here, simply connect to [https://localhost:2160](https://localhost:2160) and accept the certificate warning.
@@ -290,7 +290,6 @@ Here are a few examples of npm libraries that can be successfully loaded in web3
 
 ---
 
-- [@web3os-apps/code](https://npmjs.org/@web3os-apps/code)
 - [@web3os-apps/doom](https://npmjs.org/@web3os-apps/doom)
 - [@web3os-apps/gun](https://npmjs.org/@web3os-apps/gun)
 - [@web3os-apps/minipaint](https://npmjs.org/@web3os-apps/minipaint)
