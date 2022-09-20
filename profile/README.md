@@ -37,7 +37,8 @@
 
 A decentralized web-based operating system for the next web, empowering users and developers to:
 
-- Easily install virtually any npm browser package
+- Easily install many npm browser packages
+- Run Node.js code using [RunKit](https://runkit.com)
 - Customize the OS to suit your individual needs
 - Write scripts to perform particular tasks
 - Write full applications that can create windows and interface with the kernel
@@ -57,12 +58,13 @@ The project is still very young, and more documentation and organization is Comi
 - [Developer Quickstart](#developer-quickstart)
 - [Autostart](#autostart)
 - [Globals](#globals)
+- [Shortcuts](#shortcuts)
 - [Scripting](#scripting)
 - [Web3os Package Manager](#web3os-package-manager)
 - [Official Apps](#official-apps)
 - [Kernel Interface](#kernel-interface)
 - [App Structure](#app-structure)
-- [Backend (web3os-server)](#backend-web3os-server)
+- [Metal (@web3os-core/metal)](#metal-web3os-coremetal)
 - [WebUSB](#webusb)
 - [Web Bluetooth](#web-bluetooth)
 - [TODO](#todo)
@@ -76,9 +78,10 @@ The project is still very young, and more documentation and organization is Comi
 <details open>
 <summary><strong>Expand Features</strong></summary>
 
-- [3pm: The web3os package manager](#web3os-package-manager)
 - Runs completely in the browser (Chromium-based browsers are ideal)
 - Web-based terminal with [xterm.js](https://github.com/xtermjs/xterm.js)
+- [3pm: The web3os package manager](#web3os-package-manager)
+- Modules may also be imported with [SystemJS](https://github.com/systemjs/systemjs)
 - Installable as a Progressive Web App
 - Optional desktop environment
 - Optional backend environment runs in Docker container
@@ -88,7 +91,6 @@ The project is still very young, and more documentation and organization is Comi
 - WebHID support
 - Web Bluetooth support
 - Gamepad support
-- Modules may also be imported with [SystemJS](https://github.com/systemjs/systemjs)
 - Web3 wallet integration with [web3.js](https://github.com/ChainSafe/web3.js)
 - Fully in-browser filesystem with [BrowserFS](https://github.com/jvilk/BrowserFS)
 - IPFS Integration with [js-ipfs](https://github.com/ipfs/js-ipfs)
@@ -99,7 +101,7 @@ The project is still very young, and more documentation and organization is Comi
 - Git integration with [isomorphic-git](https://isomorphic-git.org/)
 - GunJS integration with [GUN](https://gun.eco)
 - Moralis integration with [Moralis](https://moralis.io)
-- P2P communication with [PeerJS](https://peerjs.com)
+- P2P communication (chat, audio, video, screenshare, fileshare) with [PeerJS](https://peerjs.com)
 - Torrent integration with [WebTorrent](https://webtorrent.io)
 - It runs Doom (and Wolfenstein 3D! and other DOS stuff!) with [JS-DOS](https://js-dos.com/)
 - WebAssembly executable support *(WIP)*:
@@ -224,6 +226,40 @@ These objects are available on the global object (globalThis/window):
 - `Kernel`: The global kernel
 - `Terminal`: The kernel's main terminal
 - `System`: The SystemJS library
+
+</details>
+
+## Shortcuts
+
+<details open>
+<summary><strong>Expand Shortcuts</strong></summary>
+
+Shortcuts are managed via a JSON object at `/config/shortcuts` and accessed using the `open` command.
+
+Current shortcut types: `execute` - `url`
+
+Example:
+
+```json
+{
+  "scarytime": {
+    "type": "execute",
+    "target": "snackbar Confetti attack! ; confetti --scalar 12"
+  },
+
+  "instacalc-app": {
+    "type": "execute",
+    "target": "www https://instacalc.com"
+  },
+    
+  "github": {
+    "type": "url",
+    "target": "https://github.com"
+  }
+}
+```
+
+To open a shortcut: `open <key>`, e.g. `open github`
 
 </details>
 
@@ -420,16 +456,20 @@ Apps can be written and bundled a number of different ways, for some ideas check
 
 </details>
 
-## Backend (web3os-server)
+## Metal (@web3os-core/metal)
 
 <details>
-<summary><strong>Expand Backend</strong></summary>
+<summary><strong>Expand Metal</strong></summary>
 
-The `backend` command is the utility to connect to and interact with backend servers. The web3os-server spins up a private Docker container for performing various server-side tasks at the request of the web3os client, authenticated with a user's wallet.
+(WIP)
 
-It offers multi-user capability while restricting access based on user's authenticated wallet address, or other attributes such as NFT ownership, etc.
+Metal is the web3os hardware link, allowing web3os access to certain hardware features and other capabilities of the host operating system.
 
-[View the web3os-server repository](https://github.com/web3os-org/server)
+It offers a multi-user environment while restricting access based on a user's authenticated wallet address, or other attributes such as NFT ownership, etc.
+
+The `metal` command is the utility to connect to and interact with web3os metal servers.
+
+[View the metal repository](https://github.com/web3os-org/metal)
 
 </details>
 
@@ -489,17 +529,15 @@ Access the array of devices within an app: `Kernel.modules.bluetooth.devices`
 <summary><strong>Expand TODO</strong></summary>
 
 - There's a lot to do... please help. 😅
+- IO piping
 - Typescriptify everything
 - Finish internationalization/translations
-- Decoupling of built-in modules into their own packages
-- Unified WASM handling (or just give up and focus on Emscripten)
-- Finish development of backend Node.js web3os-server API
+- Decoupling of most built-in modules into their own packages
+- Unified WASM handling
 - Rewrite expensive core modules using Emscripten
 - Improve security/isolation
 - Some apps are just placeholders; flesh them out
 - Modify command interfaces to conform to IEEE Std 1003.1-2017
-- Flesh out rm command and remove rmdir; allow recursive delete
-- Improve offline mode handling
 - Add more things to the TODO list
 
 </details>
